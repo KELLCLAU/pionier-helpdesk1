@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#F5C400">
+<title>Pionier - Quedó resuelto?</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--y:#F5C400;--yd:#d4a800;--yg:rgba(245,196,0,.15);--bg:#f5f4f0;--white:#fff;--tx:#111;--tx2:#555;--tx3:#aaa;--red:#dc2626;--green:#16a34a;--border:#e0ddd5;--r:16px}
+body{font-family:'Figtree',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.hdr{width:100%;background:var(--white);border-bottom:3px solid var(--y);padding:14px 20px;display:flex;align-items:center;justify-content:center}
+.logo{font-size:18px;font-weight:900;letter-spacing:3px;color:#111}
+.logo span{color:var(--y)}
+.wrap{width:100%;max-width:480px;padding:28px 20px 60px}
+.screen{display:none}
+.screen.on{display:block;animation:pop .25s ease}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ticket-card{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:28px}
+.tc-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--tx3);margin-bottom:4px}
+.tc-sol{font-size:22px;font-weight:900;font-family:monospace;color:var(--tx);margin-bottom:14px}
+.tc-row{display:flex;gap:8px;margin-bottom:6px;font-size:14px}
+.tc-key{color:var(--tx3);min-width:80px;flex-shrink:0}
+.tc-val{color:var(--tx);font-weight:600}
+.tc-diag{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.tc-diag-l{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--tx3);margin-bottom:6px}
+.tc-diag-t{font-size:14px;color:var(--tx);line-height:1.6;background:var(--bg);border-radius:10px;padding:12px}
+.big-q{font-size:clamp(24px,6vw,30px);font-weight:900;text-align:center;line-height:1.2;margin-bottom:10px}
+.big-hint{font-size:15px;color:var(--tx2);text-align:center;margin-bottom:28px;line-height:1.5}
+.conf-btns{display:flex;flex-direction:column;gap:14px}
+.cbtn{width:100%;padding:24px 20px;border-radius:var(--r);border:3px solid;font-family:'Figtree',sans-serif;font-size:19px;font-weight:900;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all .18s}
+.cbtn:active{transform:scale(.97)}
+.cbtn.yes{background:#f0fdf4;border-color:#16a34a;color:#14532d}
+.cbtn.yes:hover{background:#dcfce7;transform:translateY(-2px)}
+.cbtn.no{background:#fff5f5;border-color:#dc2626;color:#991b1b}
+.cbtn.no:hover{background:#fee2e2;transform:translateY(-2px)}
+.cbtn .bico{font-size:36px;flex-shrink:0}
+.cbtn .btx .t{font-size:19px;font-weight:900;display:block}
+.cbtn .btx .s{font-size:13px;font-weight:500;opacity:.7;display:block;margin-top:2px}
+.stars{display:flex;justify-content:center;gap:10px;margin:16px 0}
+.star{font-size:46px;cursor:pointer;transition:transform .12s;filter:grayscale(1);opacity:.35}
+.star.on{filter:none;opacity:1;transform:scale(1.1)}
+.star-hint{font-size:14px;color:var(--tx2);min-height:20px;font-weight:600;text-align:center}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px}
+textarea.fc{width:100%;border:3px solid var(--border);border-radius:var(--r);padding:16px;font-size:15px;font-family:'Figtree',sans-serif;font-weight:500;color:var(--tx);outline:none;background:var(--white);transition:border-color .2s;resize:none;line-height:1.5}
+textarea.fc:focus{border-color:var(--red)}
+textarea.fc::placeholder{color:var(--tx3);font-size:14px}
+.btn-send{width:100%;padding:20px;border:none;border-radius:var(--r);font-family:'Figtree',sans-serif;font-size:18px;font-weight:900;cursor:pointer;transition:all .2s;margin-top:4px}
+.btn-send.grn{background:var(--green);color:#fff}
+.btn-send.grn:hover{background:#15803d}
+.btn-send.rd{background:var(--red);color:#fff}
+.btn-send.rd:hover{background:#b91c1c}
+.btn-send:active{transform:scale(.97)}
+.btn-send:disabled{background:#e0ddd5;color:#aaa;cursor:not-allowed}
+.back-link{display:block;text-align:center;margin-top:14px;font-size:14px;color:var(--tx3);cursor:pointer;font-weight:600}
+.result-wrap{text-align:center;padding:10px 0}
+.r-ico{font-size:80px;margin-bottom:16px;animation:pop .4s cubic-bezier(.175,.885,.32,1.275)}
+.r-title{font-size:28px;font-weight:900;margin-bottom:8px}
+.r-sol{font-family:monospace;font-size:17px;font-weight:700;color:var(--tx3);margin-bottom:12px}
+.r-msg{font-size:16px;color:var(--tx2);line-height:1.7;margin-bottom:24px}
+.steps-card{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:18px;text-align:left;margin-bottom:22px}
+.sc-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--tx3);margin-bottom:10px}
+.sc-item{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:14px;color:var(--tx2);border-bottom:1px solid var(--border)}
+.sc-item:last-child{border-bottom:none}
+.sc-num{width:26px;height:26px;border-radius:50%;background:var(--y);color:#000;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.btn-home{display:block;width:100%;padding:16px;background:var(--y);border-radius:var(--r);text-align:center;font-size:16px;font-weight:900;color:#000;text-decoration:none}
+.error-wrap{text-align:center;padding:40px 10px}
+.e-ico{font-size:64px;margin-bottom:16px}
+.e-title{font-size:22px;font-weight:900;margin-bottom:10px}
+.e-msg{font-size:15px;color:var(--tx2);line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="hdr"><div class="logo">PION<span>I</span>ER</div></div>
+
+<div class="wrap">
+
+  <!-- PREGUNTA PRINCIPAL -->
+  <div class="screen on" id="s1">
+    <div class="ticket-card" id="tktCard">
+      <div class="tc-lbl">Tu solicitud</div>
+      <div class="tc-sol" id="tSol">SOL-000000</div>
+      <div class="tc-row"><span class="tc-key">Problema:</span><span class="tc-val" id="tTit">-</span></div>
+      <div class="tc-row"><span class="tc-key">Tecnico:</span><span class="tc-val" id="tTec">-</span></div>
+      <div class="tc-row"><span class="tc-key">Area:</span><span class="tc-val" id="tArea">-</span></div>
+      <div class="tc-diag" id="diagWrap" style="display:none">
+        <div class="tc-diag-l">Lo que hizo el tecnico:</div>
+        <div class="tc-diag-t" id="tDiag"></div>
+      </div>
+    </div>
+    <div class="big-q">Quedo resuelto tu problema?</div>
+    <div class="big-hint">El tecnico marco tu solicitud como resuelta.<br>Dinos si quedo bien o si sigue fallando.</div>
+    <div class="conf-btns">
+      <button class="cbtn yes" onclick="ir('s2')">
+        <span class="bico">OK</span>
+        <div class="btx"><span class="t">Si, quedo resuelto</span><span class="s">Todo funciona bien, gracias</span></div>
+      </button>
+      <button class="cbtn no" onclick="ir('s3')">
+        <span class="bico">X</span>
+        <div class="btx"><span class="t">No, sigue fallando</span><span class="s">El problema continua o aparecio otro</span></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- SI RESUELTO: CALIFICAR -->
+  <div class="screen" id="s2">
+    <div class="big-q" style="margin-bottom:8px">Genial! Cuanto calificarias la atencion?</div>
+    <div class="big-hint" style="margin-bottom:20px">Toca las estrellas. Una es malo, cinco es excelente.</div>
+    <div class="stars">
+      <span class="star" onclick="star(1)">&#9733;</span>
+      <span class="star" onclick="star(2)">&#9733;</span>
+      <span class="star" onclick="star(3)">&#9733;</span>
+      <span class="star" onclick="star(4)">&#9733;</span>
+      <span class="star" onclick="star(5)">&#9733;</span>
+    </div>
+    <div class="star-hint" id="sHint">Toca para calificar</div>
+    <button class="btn-send grn" id="btnOk" onclick="confirmarOk()" disabled style="margin-top:28px">Enviar mi calificacion</button>
+    <span class="back-link" onclick="ir('s1')">Volver</span>
+  </div>
+
+  <!-- NO RESUELTO: REABRIR -->
+  <div class="screen" id="s3">
+    <div class="big-q" style="margin-bottom:8px">Lo sentimos</div>
+    <div class="big-hint" style="margin-bottom:20px">Cuentanos que sigue fallando para que el equipo lo retome con prioridad.</div>
+    <div class="field">
+      <label>Que sigue pasando?</label>
+      <textarea class="fc" id="rTxt" rows="4"
+        placeholder="Ej: La impresora sigue sin conectarse, o aparecio un error diferente..."
+        oninput="onRT(this)"></textarea>
+    </div>
+    <button class="btn-send rd" id="btnNo" onclick="reabrir()" disabled>Reportar que sigue fallando</button>
+    <span class="back-link" onclick="ir('s1')">Volver</span>
+  </div>
+
+  <!-- RESULTADO: CERRADO -->
+  <div class="screen" id="s4">
+    <div class="result-wrap">
+      <div class="r-ico">&#127942;</div>
+      <div class="r-title">Muchas gracias!</div>
+      <div class="r-sol" id="rSol1"></div>
+      <div class="r-msg">Tu calificacion ayuda a mejorar la atencion para todos.<br>El ticket quedo cerrado formalmente.</div>
+      <div class="steps-card">
+        <div class="sc-title">Tienes otro problema?</div>
+        <div class="sc-item"><div class="sc-num">1</div><span>Entra a la pagina principal de Pionier TI</span></div>
+        <div class="sc-item"><div class="sc-num">2</div><span>Toca "Pedir ayuda" y registra tu nuevo problema</span></div>
+        <div class="sc-item"><div class="sc-num">3</div><span>El equipo lo atendera segun la urgencia</span></div>
+      </div>
+      <a href="index.html" class="btn-home">Ir a la pagina principal</a>
+    </div>
+  </div>
+
+  <!-- RESULTADO: REABIERTO -->
+  <div class="screen" id="s5">
+    <div class="result-wrap">
+      <div class="r-ico">&#128260;</div>
+      <div class="r-title">Ticket reabierto</div>
+      <div class="r-sol" id="rSol2"></div>
+      <div class="r-msg">El equipo de TI retomara tu caso con prioridad en las proximas horas.</div>
+      <div class="steps-card">
+        <div class="sc-title">Que pasa ahora?</div>
+        <div class="sc-item"><div class="sc-num">1</div><span>HelpDesk recibio tu reporte de que sigue fallando</span></div>
+        <div class="sc-item"><div class="sc-num">2</div><span>Se asignara un tecnico para retomar la atencion</span></div>
+        <div class="sc-item"><div class="sc-num">3</div><span>Ya tienen el contexto, sera mas rapido esta vez</span></div>
+      </div>
+      <a href="index.html" class="btn-home">Ir a la pagina principal</a>
+    </div>
+  </div>
+
+  <!-- ERROR -->
+  <div class="screen" id="s-err">
+    <div class="error-wrap">
+      <div class="e-ico">&#9888;&#65039;</div>
+      <div class="e-title">Este link ya no esta disponible</div>
+      <div class="e-msg">Es posible que ya hayas confirmado la conformidad antes, o que el link haya expirado.<br><br>Si tu problema sigue sin resolverse, registra una nueva solicitud.</div>
+      <a href="index.html" style="display:inline-block;margin-top:24px;padding:14px 28px;background:var(--y);border-radius:var(--r);font-size:15px;font-weight:900;color:#000;text-decoration:none">Ir a la pagina principal</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var stars=0, solId=null;
+var MSGS=['','Muy malo','Regular','Bien','Muy bien','Excelente!'];
+
+function gp(n){return new URLSearchParams(window.location.search).get(n);}
+
+(function init(){
+  solId = gp('sol');
+  var token = gp('token');
+  if(!solId){
+    // MODO DEMO: muestra ejemplo
+    solId='SOL-DEMO01';
+    document.getElementById('tSol').textContent='SOL-DEMO01';
+    document.getElementById('tTit').textContent='PC no enciende en Contabilidad';
+    document.getElementById('tTec').textContent='Daniel Guerrero T.';
+    document.getElementById('tArea').textContent='Soporte TI';
+    document.getElementById('diagWrap').style.display='block';
+    document.getElementById('tDiag').textContent='Se reemplazo la fuente de poder del equipo. PC operativo y verificado con el usuario en Huachipa.';
+    return;
+  }
+  var ts=JSON.parse(localStorage.getItem('pio_v2')||'[]');
+  var t=ts.find(function(x){return x.id===solId;});
+  if(!t){ir('s-err');return;}
+  if(t.estado==='Cerrado'){ir('s-err');return;}
+  if(t.estado!=='Resuelto'){ir('s-err');return;}
+  document.getElementById('tSol').textContent=t.id;
+  document.getElementById('tTit').textContent=t.titulo||'-';
+  document.getElementById('tTec').textContent=t.tecNm||'Equipo TI';
+  document.getElementById('tArea').textContent=t.area||'-';
+  if(t.diagnostico){document.getElementById('diagWrap').style.display='block';document.getElementById('tDiag').textContent=t.diagnostico;}
+})();
+
+function ir(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on');});
+  document.getElementById(id).classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function star(n){
+  stars=n;
+  document.querySelectorAll('.star').forEach(function(s,i){s.classList.toggle('on',i<n);});
+  document.getElementById('sHint').textContent=MSGS[n];
+  document.getElementById('btnOk').disabled=false;
+}
+
+function confirmarOk(){
+  if(!stars)return;
+  var ts=JSON.parse(localStorage.getItem('pio_v2')||'[]');
+  var i=ts.findIndex(function(x){return x.id===solId;});
+  if(i!==-1){
+    ts[i].estado='Cerrado';ts[i].calificacion=stars;
+    ts[i].updatedAt=new Date().toISOString();
+    ts[i].hist=ts[i].hist||[];
+    ts[i].hist.push({a:'Conformidad confirmada. Calificacion: '+stars+'/5.',by:ts[i].sol||'Usuario',at:new Date().toISOString(),tp:'conformidad'});
+    localStorage.setItem('pio_v2',JSON.stringify(ts));
+  }
+  document.getElementById('rSol1').textContent=solId+' — '+'★'.repeat(stars);
+  ir('s4');
+}
+
+function onRT(el){document.getElementById('btnNo').disabled=el.value.trim().length<8;}
+
+function reabrir(){
+  var motivo=document.getElementById('rTxt').value.trim();
+  if(motivo.length<8)return;
+  var ts=JSON.parse(localStorage.getItem('pio_v2')||'[]');
+  var i=ts.findIndex(function(x){return x.id===solId;});
+  if(i!==-1){
+    ts[i].estado='Reabierto';ts[i].updatedAt=new Date().toISOString();
+    ts[i].hist=ts[i].hist||[];
+    ts[i].hist.push({a:'Reabierto por usuario. Motivo: '+motivo,by:ts[i].sol||'Usuario',at:new Date().toISOString(),tp:'reabrir'});
+    localStorage.setItem('pio_v2',JSON.stringify(ts));
+  }
+  document.getElementById('rSol2').textContent=solId;
+  ir('s5');
+}
+</script>
+</body>
+</html>

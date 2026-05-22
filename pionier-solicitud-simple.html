@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#F5C400">
+<title>Pionier — Pedir Ayuda</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--y:#F5C400;--yd:#d4a800;--yg:rgba(245,196,0,.18);--bg:#f5f4f0;--white:#fff;--tx:#111;--tx2:#555;--tx3:#aaa;--red:#dc2626;--green:#16a34a;--border:#e0ddd5;--r:16px}
+html{font-size:18px}
+body{font-family:'Figtree',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+.hdr{background:var(--white);border-bottom:3px solid var(--y);padding:14px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+.hdr-logo{font-size:20px;font-weight:900;letter-spacing:3px;color:#111}
+.hdr-logo span{color:var(--y)}
+.hdr-txt{font-size:13px;color:var(--tx2);font-weight:500}
+
+/* PROGRESS */
+.prog-bar{height:5px;background:#e0ddd5}
+.prog-fill{height:5px;background:var(--y);transition:width .4s ease}
+
+/* WRAP */
+.wrap{max-width:500px;margin:0 auto;padding:24px 20px 80px;width:100%}
+
+/* SCREEN */
+.screen{display:none}
+.screen.on{display:block;animation:pop .22s ease}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* BIG QUESTION */
+.big-q{font-size:26px;font-weight:900;line-height:1.2;margin-bottom:8px;color:var(--tx)}
+.big-hint{font-size:15px;color:var(--tx2);margin-bottom:28px;line-height:1.5}
+
+/* OPTION CARDS — grande, toca fácil */
+.opts{display:flex;flex-direction:column;gap:14px}
+.opt{background:var(--white);border:3px solid var(--border);border-radius:var(--r);padding:20px 18px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.opt:active{transform:scale(.97)}
+.opt.on{border-color:var(--y);background:#fffce6}
+.opt-ico{font-size:40px;flex-shrink:0;line-height:1}
+.opt-tx .t{font-size:17px;font-weight:800;color:var(--tx);line-height:1.2}
+.opt-tx .s{font-size:13px;color:var(--tx2);margin-top:3px;line-height:1.4}
+.opt.on .opt-tx .t{color:#8a6d00}
+
+/* TEXT INPUT */
+.big-input{width:100%;border:3px solid var(--border);border-radius:var(--r);padding:18px;font-size:17px;font-family:'Figtree',sans-serif;font-weight:500;color:var(--tx);outline:none;background:var(--white);transition:border-color .2s;resize:none;line-height:1.5}
+.big-input:focus{border-color:var(--y)}
+.big-input::placeholder{color:var(--tx3)}
+.char-hint{font-size:12px;color:var(--tx3);text-align:right;margin-top:6px}
+
+/* NOMBRE */
+.name-input{width:100%;border:3px solid var(--border);border-radius:var(--r);padding:18px;font-size:20px;font-family:'Figtree',sans-serif;font-weight:700;color:var(--tx);outline:none;background:var(--white);transition:border-color .2s;text-align:center}
+.name-input:focus{border-color:var(--y)}
+.name-input::placeholder{color:var(--tx3);font-weight:500;font-size:16px}
+
+/* SEDE SELECT */
+.sede-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sede-opt{background:var(--white);border:3px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .15s;font-size:14px;font-weight:700;color:var(--tx2)}
+.sede-opt:active{transform:scale(.96)}
+.sede-opt.on{border-color:var(--y);background:#fffce6;color:#8a6d00}
+
+/* PHOTO UPLOAD */
+.photo-area{border:3px dashed var(--border);border-radius:var(--r);padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--white);position:relative}
+.photo-area:hover{border-color:var(--yd)}
+.photo-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-area .ico{font-size:48px;margin-bottom:8px}
+.photo-area .t{font-size:16px;font-weight:700;color:var(--tx2)}
+.photo-area .s{font-size:13px;color:var(--tx3);margin-top:4px}
+.photo-ok{display:none;background:#f0fdf4;border:3px solid #16a34a;border-radius:var(--r);padding:16px;text-align:center;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:700;color:var(--green)}
+.photo-ok.show{display:flex}
+.skip-photo{display:block;text-align:center;margin-top:12px;font-size:14px;color:var(--tx3);cursor:pointer;text-decoration:underline}
+
+/* BUTTONS */
+.btn-next{width:100%;padding:20px;background:var(--y);border:none;border-radius:var(--r);font-family:'Figtree',sans-serif;font-size:20px;font-weight:900;color:#000;cursor:pointer;margin-top:28px;transition:all .2s;letter-spacing:.3px}
+.btn-next:hover{background:var(--yd)}
+.btn-next:active{transform:scale(.97)}
+.btn-next:disabled{background:#e0ddd5;color:#aaa;cursor:not-allowed}
+.btn-back{display:block;text-align:center;margin-top:14px;font-size:15px;color:var(--tx3);cursor:pointer;font-weight:600}
+.btn-back:hover{color:var(--tx)}
+
+/* SUCCESS */
+.success{text-align:center;padding:20px 0}
+.success-circle{width:100px;height:100px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:50px;animation:pop .4s cubic-bezier(.175,.885,.32,1.275)}
+.sol-num{font-size:28px;font-weight:900;letter-spacing:2px;color:var(--tx);margin-bottom:6px;font-family:monospace}
+.sol-badge{display:inline-block;padding:6px 18px;border-radius:20px;font-size:14px;font-weight:800;margin-bottom:20px}
+.sol-badge.crit{background:#fee2e2;color:#991b1b}
+.sol-badge.alto{background:#fef3c7;color:#92400e}
+.sol-badge.medio,.sol-badge.bajo{background:#dcfce7;color:#14532d}
+.success-msg{font-size:17px;color:var(--tx2);line-height:1.7;margin-bottom:28px}
+.next-steps{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:20px;text-align:left;margin-bottom:24px}
+.ns-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--tx3);margin-bottom:12px}
+.ns-item{display:flex;align-items:center;gap:12px;padding:8px 0;font-size:15px;color:var(--tx2);border-bottom:1px solid var(--border)}
+.ns-item:last-child{border-bottom:none}
+.ns-num{width:28px;height:28px;border-radius:50%;background:var(--y);color:#000;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.btn-new{width:100%;padding:16px;background:var(--white);border:3px solid var(--border);border-radius:var(--r);font-family:'Figtree',sans-serif;font-size:17px;font-weight:700;color:var(--tx2);cursor:pointer;transition:all .2s}
+.btn-new:hover{border-color:var(--tx);color:var(--tx)}
+
+/* URGENCIA BADGE en resultado */
+.u-banner{border-radius:12px;padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700}
+.u-banner.crit{background:#fee2e2;color:#991b1b}
+.u-banner.alto{background:#fef3c7;color:#92400e}
+.u-banner.medio{background:#dcfce7;color:#14532d}
+.u-banner.bajo{background:#dcfce7;color:#14532d}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="hdr-logo">PION<span>I</span>ER</div>
+    <div class="hdr-txt">Pedir ayuda a TI</div>
+  </div>
+</div>
+<div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+
+<div class="wrap">
+
+  <!-- PASO 1: QUÉ PASÓ -->
+  <div class="screen on" id="s1">
+    <div class="big-q">¿Qué está fallando?</div>
+    <div class="big-hint">Toca la opción que más se parece a tu problema.</div>
+    <div class="opts" id="opts1"></div>
+    <button class="btn-next" id="btn1" onclick="go2()" disabled>Siguiente →</button>
+  </div>
+
+  <!-- PASO 2: CUÉNTANOS MÁS -->
+  <div class="screen" id="s2">
+    <div class="big-q">¿Qué exactamente no funciona?</div>
+    <div class="big-hint">Escríbelo como se lo contarías a un amigo. No importa la ortografía.</div>
+    <textarea class="big-input" id="desc" rows="5"
+      placeholder="Ej: Mi computadora no prende, cuando la enciendo hace un ruido raro y la pantalla queda negra..."
+      oninput="onDesc(this)"></textarea>
+    <div class="char-hint" id="charHint">Escribe al menos una oración</div>
+
+    <div style="margin-top:24px">
+      <div class="big-hint" style="margin-bottom:12px">📷 ¿Tienes una foto del error? <span style="color:var(--tx3);font-weight:500">(opcional — ayuda mucho)</span></div>
+      <div class="photo-area" id="photoArea">
+        <input type="file" accept="image/*" capture="environment" onchange="onPhoto(this)" id="photoInput">
+        <div class="ico">📷</div>
+        <div class="t">Tomar foto o subir imagen</div>
+        <div class="s">de la pantalla de error</div>
+      </div>
+      <div class="photo-ok" id="photoOk">✅ <span id="photoName">Foto lista</span></div>
+    </div>
+
+    <button class="btn-next" id="btn2" onclick="go3()" disabled>Siguiente →</button>
+    <span class="btn-back" onclick="go(1)">← Atrás</span>
+  </div>
+
+  <!-- PASO 3: TUS DATOS (mínimo) -->
+  <div class="screen" id="s3">
+    <div class="big-q">¿Cómo te llamamos?</div>
+    <div class="big-hint">Solo tu nombre y dónde estás. Nada más.</div>
+
+    <input type="text" class="name-input" id="nombre"
+      placeholder="Tu nombre completo"
+      autocomplete="name" oninput="onNombre()"
+      style="margin-bottom:20px" />
+
+    <div class="big-hint" style="margin-bottom:12px">¿En qué sede estás?</div>
+    <div class="sede-grid" id="sedeGrid"></div>
+
+    <div style="margin-top:20px">
+      <div class="big-hint" style="margin-bottom:8px">¿Celular para contactarte? <span style="color:var(--tx3);font-weight:500">(opcional)</span></div>
+      <input type="tel" class="name-input" id="cel"
+        placeholder="9XX-XXX-XXX"
+        autocomplete="tel" style="font-size:18px"/>
+    </div>
+
+    <button class="btn-next" id="btn3" onclick="enviar()" disabled>✅ Enviar mi solicitud</button>
+    <span class="btn-back" onclick="go(2)">← Atrás</span>
+  </div>
+
+  <!-- ÉXITO -->
+  <div class="screen" id="s4">
+    <div class="success">
+      <div class="success-circle">✓</div>
+      <div class="sol-num" id="solNum">SOL-000000</div>
+      <div class="u-banner medio" id="urgBanner"></div>
+      <div class="success-msg" id="succMsg"></div>
+      <div class="next-steps">
+        <div class="ns-title">¿Qué pasa ahora?</div>
+        <div class="ns-item" id="ns1"><div class="ns-num">1</div><span></span></div>
+        <div class="ns-item" id="ns2"><div class="ns-num">2</div><span></span></div>
+        <div class="ns-item" id="ns3"><div class="ns-num">3</div><span></span></div>
+      </div>
+      <button class="btn-new" onclick="reiniciar()">+ Tengo otro problema</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── OPCIONES ───────────────────────────────────
+const OPCIONES = [
+  {ico:'💻', t:'Mi computadora o laptop',   s:'No prende, va lenta, pantalla negra, error',      area:'Soporte TI', sub:'SOPORTE TI',   prio:'Alto'},
+  {ico:'🖨️', t:'Impresora o escáner',        s:'No imprime, sin conexión, papel atascado',        area:'Soporte TI', sub:'SOPORTE TI',   prio:'Medio'},
+  {ico:'🌐', t:'Internet o red',              s:'Sin conexión, WiFi caído, muy lento',             area:'Soporte TI', sub:'GESTION TI',   prio:'Alto'},
+  {ico:'🔑', t:'No puedo ingresar al sistema',s:'Contraseña bloqueada, usuario sin acceso',        area:'Soporte TI', sub:'GESTION TI',   prio:'Alto'},
+  {ico:'📊', t:'Sistema Activity',            s:'Error, módulo que no abre, datos incorrectos',   area:'Sistema Activity',sub:'INCIDENCIAS',prio:'Alto'},
+  {ico:'📈', t:'Reporte o Power BI',          s:'Dashboard roto, datos que no cargan, acceso',    area:'Power BI',   sub:'ACCESOS',      prio:'Medio'},
+  {ico:'🖥️', t:'Página web o portal interno', s:'Error en la página, no carga, botón que falla', area:'Desarrollo Web',sub:'INCONVENIENTES TECNICOS',prio:'Medio'},
+  {ico:'🆘', t:'Todo parado — URGENTE',       s:'Sistema completamente caído, no puedo trabajar', area:'Soporte TI', sub:'SOPORTE TI',   prio:'Critico'},
+];
+
+const SEDES = ['Huachipa','Campoy','Zárate','Azángaro','Jicamarca','Tiendas','Oficina Central','Teletrabajo'];
+
+let SEL = {opcion:null, desc:'', photo:null, nombre:'', sede:'', cel:''};
+let curStep = 1;
+
+// ─── INIT ────────────────────────────────────────
+document.getElementById('opts1').innerHTML = OPCIONES.map((o,i)=>`
+  <div class="opt${o.prio==='Critico'?' opt-crit':''}" id="opt${i}" onclick="selOpt(${i})" style="${o.prio==='Critico'?'border-color:#fca5a5;background:#fff5f5':''}">
+    <div class="opt-ico">${o.ico}</div>
+    <div class="opt-tx">
+      <div class="t">${o.t}</div>
+      <div class="s">${o.s}</div>
+    </div>
+  </div>`).join('');
+
+document.getElementById('sedeGrid').innerHTML = SEDES.map((s,i)=>`
+  <div class="sede-opt" id="sede${i}" onclick="selSede('${s}',${i})">${s}</div>`).join('');
+
+// ─── INTERACCIONES ───────────────────────────────
+function selOpt(i){
+  SEL.opcion = i;
+  document.querySelectorAll('.opt').forEach((el,j)=>{
+    el.classList.toggle('on', j===i);
+    if(j===i&&OPCIONES[i].prio!=='Critico') el.style='';
+    else if(j!==i) el.style='';
+  });
+  if(OPCIONES[i].prio==='Critico'){
+    document.getElementById('opt'+i).style='border-color:#dc2626;background:#fff5f5';
+    document.getElementById('opt'+i).classList.add('on');
+  }
+  document.getElementById('btn1').disabled = false;
+}
+
+function onDesc(el){
+  const v = el.value.trim();
+  const ok = v.length >= 8;
+  document.getElementById('btn2').disabled = !ok;
+  document.getElementById('charHint').textContent = ok ? `✓ Perfecto` : `Escribe un poco más (${v.length}/8 caracteres)`;
+  document.getElementById('charHint').style.color = ok ? 'var(--green)' : 'var(--tx3)';
+  SEL.desc = el.value;
+}
+
+function onPhoto(input){
+  const f = input.files[0]; if(!f) return;
+  SEL.photo = f;
+  const pa = document.getElementById('photoArea');
+  pa.style.display = 'none';
+  const ok = document.getElementById('photoOk');
+  ok.classList.add('show');
+  document.getElementById('photoName').textContent = '📷 '+f.name.slice(0,30);
+}
+
+function onNombre(){
+  SEL.nombre = document.getElementById('nombre').value.trim();
+  checkBtn3();
+}
+
+function selSede(s,i){
+  SEL.sede = s;
+  document.querySelectorAll('.sede-opt').forEach((el,j)=>el.classList.toggle('on',j===i));
+  checkBtn3();
+}
+
+function checkBtn3(){
+  document.getElementById('btn3').disabled = !(SEL.nombre.length >= 2 && SEL.sede);
+}
+
+// ─── NAVEGACIÓN ──────────────────────────────────
+function go(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById('s'+n).classList.add('on');
+  curStep = n;
+  const pct = {1:10, 2:45, 3:75, 4:100}[n]||0;
+  document.getElementById('progFill').style.width = pct+'%';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function go2(){
+  if(SEL.opcion===null)return;
+  go(2);
+}
+
+function go3(){
+  if(SEL.desc.trim().length < 8)return;
+  go(3);
+}
+
+// ─── ENVIAR ──────────────────────────────────────
+function enviar(){
+  if(!SEL.nombre || !SEL.sede) return;
+  SEL.cel = document.getElementById('cel').value.trim();
+
+  const op = OPCIONES[SEL.opcion];
+  const sol = 'SOL-'+String(Math.floor(Math.random()*900000)+100000);
+  const now = new Date().toISOString();
+
+  const ticket = {
+    id: sol, area: op.area, subtipo: op.sub, prioridad: op.prio,
+    empresa: 'MODIPSA', titulo: op.t,
+    descripcion: SEL.desc,
+    planta: SEL.sede, equipo:'', ip:'', url:'', ambiente:'',
+    reporte:'', modulo:'', usuarioAf:'',
+    req: false, estado:'Registrado',
+    sol: SEL.nombre, solId:'pub_'+Date.now(),
+    celular: SEL.cel,
+    tecId:null, tecNm:null,
+    createdAt: now, updatedAt: now,
+    resolvedAt:null, calificacion:null, diagnostico:'', files:[],
+    hist:[{a:'Solicitud registrada desde formulario por '+SEL.nombre+' ('+SEL.sede+'). Problema: '+op.t,by:SEL.nombre,at:now,tp:'create'}],
+    cmts:[]
+  };
+
+  // Guardar en localStorage (compartido con helpdesk y app)
+  try{
+    const ts = JSON.parse(localStorage.getItem('pio_v2')||'[]');
+    ts.push(ticket);
+    localStorage.setItem('pio_v2', JSON.stringify(ts));
+  }catch(e){}
+
+  // Mostrar éxito
+  const msgs = {
+    Critico:{badge:'🚨 EMERGENCIA — respuesta en 15 minutos',banner:'crit',msg:'Tu solicitud fue marcada como <strong>EMERGENCIA</strong>. El equipo de TI debe contactarte en <strong>máximo 15 minutos</strong>. Si no te llaman, avisa a tu jefe directo.',ns:['TI te contactará muy pronto por teléfono o en persona','Un técnico irá a atenderte directamente','Cuando termine te preguntará si quedó resuelto']},
+    Alto:{badge:'🔴 Urgente — respuesta en 30 minutos',banner:'alto',msg:'Recibimos tu solicitud. El equipo de TI la revisará en los próximos <strong>30 minutos</strong>.',ns:['Recibirás una llamada o mensaje pronto','Un técnico se asignará a tu caso','Te avisaremos cuando esté resuelto']},
+    Medio:{badge:'🟡 Normal — respuesta en 2 horas',banner:'medio',msg:'Recibimos tu solicitud. Te atenderemos en las próximas <strong>2 horas</strong>.',ns:['El equipo revisará tu caso','Se asignará un técnico disponible','Te avisaremos cuando esté listo']},
+    Bajo:{badge:'🟢 Registrado',banner:'bajo',msg:'Recibimos tu solicitud. La atenderemos durante el día de hoy.',ns:['El equipo revisará tu caso hoy','Se te asignará un técnico','Te avisaremos cuando esté resuelto']},
+  };
+
+  const m = msgs[op.prio] || msgs.Medio;
+  document.getElementById('solNum').textContent = sol;
+  const ub = document.getElementById('urgBanner');
+  ub.textContent = m.badge;
+  ub.className = 'u-banner '+m.banner;
+  document.getElementById('succMsg').innerHTML = m.msg;
+  [1,2,3].forEach(i=>document.getElementById('ns'+i).querySelector('span').textContent=m.ns[i-1]);
+  go(4);
+}
+
+function reiniciar(){
+  SEL={opcion:null,desc:'',photo:null,nombre:'',sede:'',cel:''};
+  document.getElementById('desc').value='';
+  document.getElementById('nombre').value='';
+  document.getElementById('cel').value='';
+  document.getElementById('charHint').textContent='Escribe al menos una oración';
+  document.getElementById('charHint').style.color='var(--tx3)';
+  document.getElementById('btn1').disabled=true;
+  document.getElementById('btn2').disabled=true;
+  document.getElementById('btn3').disabled=true;
+  document.querySelectorAll('.opt').forEach(el=>{el.classList.remove('on');el.style='';});
+  document.querySelectorAll('.sede-opt').forEach(el=>el.classList.remove('on'));
+  document.getElementById('photoArea').style.display='block';
+  document.getElementById('photoOk').classList.remove('show');
+  document.getElementById('photoInput').value='';
+  go(1);
+}
+</script>
+</body>
+</html>

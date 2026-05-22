@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pionier TI">
+<meta name="theme-color" content="#F5C400">
+<title>Pionier TI — App Técnicos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --y:#F5C400;--yd:#d4a800;--ys:rgba(245,196,0,.15);
+  --bg:#0a0a0a;--bg2:#111;--bg3:#1a1a1a;--bg4:#222;
+  --bd:#2a2a2a;--bd2:#333;
+  --tx:#f0f0f0;--tx2:#888;--tx3:#444;
+  --red:#ef4444;--rs:rgba(239,68,68,.15);
+  --green:#22c55e;--gs:rgba(34,197,94,.15);
+  --blue:#3b82f6;--bs:rgba(59,130,246,.15);
+  --orange:#f97316;--os:rgba(249,115,22,.15);
+  --purple:#a855f7;--ps:rgba(168,85,247,.15);
+  --r:12px;--rs2:8px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px)
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:'Figtree',sans-serif;color:var(--tx);display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative}
+
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;max-width:430px;margin:0 auto}
+.login-logo{text-align:center;margin-bottom:36px}
+.login-logo .brand{font-size:30px;font-weight:800;letter-spacing:4px;color:var(--y)}
+.login-logo .sub{font-size:11px;color:var(--tx2);letter-spacing:2px;margin-top:4px}
+.login-logo .badge{display:inline-block;background:var(--bg3);border:1px solid var(--bd);border-radius:20px;padding:5px 14px;font-size:11px;color:var(--tx2);margin-top:10px}
+.user-list{width:100%;display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.user-btn{width:100%;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s;text-align:left}
+.user-btn:active{transform:scale(.98);background:var(--bg4)}
+.user-btn.selected{border-color:var(--y);background:rgba(245,196,0,.07)}
+.user-av{width:40px;height:40px;border-radius:50%;background:var(--y);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#000;flex-shrink:0}
+.user-av.sup{background:var(--red)}
+.user-av.sec{background:var(--purple)}
+.user-info .nm{font-size:14px;font-weight:700;color:var(--tx)}
+.user-info .rl{font-size:11px;color:var(--tx2);margin-top:1px}
+.user-btn .badge-sup{margin-left:auto;background:rgba(239,68,68,.2);color:#f87171;border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:2px 8px;font-size:10px;font-weight:700;flex-shrink:0}
+.pin-section{width:100%}
+.pin-label{font-size:12px;color:var(--tx2);margin-bottom:8px;text-align:center}
+.pin-dots{display:flex;justify-content:center;gap:12px;margin-bottom:16px}
+.pin-dot{width:14px;height:14px;border-radius:50%;background:var(--bd2);transition:background .15s}
+.pin-dot.filled{background:var(--y)}
+.pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pin-key{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:18px 10px;font-size:22px;font-weight:600;color:var(--tx);cursor:pointer;transition:all .12s;text-align:center}
+.pin-key:active{background:var(--bg4);transform:scale(.94)}
+.pin-key.del{font-size:16px;color:var(--tx2)}
+.pin-err{color:var(--red);font-size:12px;text-align:center;margin-top:8px;min-height:18px}
+
+/* APP SHELL */
+#appShell{display:none;flex-direction:column;height:100%;padding-top:var(--safe-top)}
+#appShell.on{display:flex}
+
+/* TOPBAR */
+.topbar{background:var(--bg2);border-bottom:1px solid var(--bd);padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.tb-av{width:34px;height:34px;border-radius:50%;background:var(--y);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#000;flex-shrink:0}
+.tb-av.sup{background:var(--red)}
+.tb-av.sec{background:var(--purple)}
+.tb-info{flex:1}
+.tb-name{font-size:13px;font-weight:700;line-height:1.2}
+.tb-role{font-size:10px;color:var(--tx2)}
+.tb-right{display:flex;align-items:center;gap:8px}
+.notif-btn{position:relative;width:36px;height:36px;border-radius:50%;background:var(--bg3);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
+.notif-badge{position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;border-radius:50%;width:16px;height:16px;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;display:none}
+.notif-badge.on{display:flex}
+.logout-btn{width:32px;height:32px;border-radius:50%;background:transparent;border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--tx2)}
+
+/* SCROLL CONTENT */
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.scroll-area::-webkit-scrollbar{display:none}
+
+/* BOTTOM NAV */
+.bottom-nav{background:var(--bg2);border-top:1px solid var(--bd);display:flex;padding-bottom:var(--safe-bot);flex-shrink:0}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 8px;cursor:pointer;transition:all .15s;position:relative}
+.nav-item .nav-ico{font-size:20px;transition:transform .15s}
+.nav-item .nav-lbl{font-size:9px;color:var(--tx3);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.nav-item.on .nav-ico{transform:translateY(-2px)}
+.nav-item.on .nav-lbl{color:var(--y)}
+.nav-dot{position:absolute;top:8px;right:calc(50% - 14px);width:7px;height:7px;border-radius:50%;background:var(--red);display:none}
+.nav-dot.on{display:block}
+
+/* VIEWS */
+.view{display:none;padding:14px;animation:fadeUp .2s ease}
+.view.on{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* EMERGENCY STRIP */
+.em-strip{background:var(--red);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;cursor:pointer;animation:pulse-em 2s infinite}
+@keyframes pulse-em{0%,100%{opacity:1}50%{opacity:.85}}
+.em-strip .ico{font-size:22px;flex-shrink:0}
+.em-strip .tx{flex:1}
+.em-strip .tx .t1{font-size:13px;font-weight:800;color:#fff}
+.em-strip .tx .t2{font-size:11px;color:rgba(255,255,255,.8);margin-top:1px}
+.em-strip .cnt{background:rgba(255,255,255,.25);color:#fff;border-radius:50%;width:26px;height:26px;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.kpi{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:14px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi.y::before{background:var(--y)}.kpi.rd::before{background:var(--red)}.kpi.gn::before{background:var(--green)}.kpi.or::before{background:var(--orange)}
+.kpi .lbl{font-size:10px;color:var(--tx2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.kpi .val{font-size:28px;font-weight:800;line-height:1;font-family:'JetBrains Mono',monospace}
+.kpi.y .val{color:var(--y)}.kpi.rd .val{color:var(--red)}.kpi.gn .val{color:var(--green)}.kpi.or .val{color:var(--orange)}
+.kpi .sub{font-size:10px;color:var(--tx3);margin-top:3px}
+
+/* SECTION HEADER */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sec-hd .ttl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--tx2)}
+.sec-hd .act{font-size:11px;color:var(--y);cursor:pointer;font-weight:600}
+
+/* TICKET CARDS */
+.ticket-card{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.ticket-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.ticket-card.crit::before{background:var(--red);animation:blink-bar 1s infinite}
+@keyframes blink-bar{0%,100%{opacity:1}50%{opacity:.3}}
+.ticket-card.alto::before{background:var(--orange)}
+.ticket-card.medio::before{background:var(--y)}
+.ticket-card.bajo::before{background:var(--green)}
+.ticket-card:active{transform:scale(.98)}
+.tc-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.tc-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--y);font-weight:600;flex-shrink:0}
+.tc-title{font-size:13px;font-weight:700;flex:1;line-height:1.3}
+.tc-prio{flex-shrink:0}
+.tc-mid{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.tc-bot{display:flex;align-items:center;justify-content:space-between}
+.tc-area{font-size:10px;color:var(--tx2);background:var(--bg4);padding:2px 7px;border-radius:10px}
+.tc-sol{font-size:10px;color:var(--tx3)}
+.tc-sla{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700}
+.sla-ok{color:var(--green)}.sla-w{color:var(--orange)}.sla-x{color:var(--red)}
+.badge{display:inline-flex;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:700}
+.b-reg{background:var(--bs);color:#60a5fa}.b-eat{background:var(--ys);color:var(--y)}
+.b-esc{background:var(--ps);color:#c084fc}.b-res{background:var(--gs);color:var(--green)}
+.b-cer{background:var(--bg4);color:var(--tx3)}.b-pa{background:var(--os);color:#fb923c}
+.b-rea{background:var(--ps);color:#c084fc}
+
+/* ACTION BUTTONS — big, thumb-friendly */
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.action-btn{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:all .15s}
+.action-btn:active{transform:scale(.96)}
+.action-btn .ab-ico{font-size:26px}
+.action-btn .ab-lbl{font-size:12px;font-weight:700;text-align:center;color:var(--tx)}
+.action-btn .ab-sub{font-size:10px;color:var(--tx2);text-align:center}
+.action-btn.primary{border-color:var(--yd);background:rgba(245,196,0,.07)}
+
+/* DETAIL SHEET (slide up) */
+.sheet-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.7);display:none;align-items:flex-end;justify-content:center}
+.sheet-overlay.on{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.sheet{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:36px;height:4px;background:var(--bd2);border-radius:2px;margin:12px auto 0}
+.sheet-head{padding:14px 18px 10px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.sheet-title{font-size:16px;font-weight:800}
+.sheet-close{width:30px;height:30px;border-radius:50%;background:var(--bg3);border:1px solid var(--bd);color:var(--tx2);font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.sheet-body{padding:16px 18px;padding-bottom:calc(16px + var(--safe-bot))}
+
+/* DETAIL INFO ROWS */
+.drow{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)}
+.drow:last-child{border-bottom:none}
+.dk{font-size:11px;color:var(--tx2);min-width:85px;flex-shrink:0;padding-top:1px}
+.dv{font-size:12px;color:var(--tx);font-weight:500;flex:1;word-break:break-word}
+
+/* BIG ACTION BUTTONS IN SHEET */
+.sheet-actions{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.sa-btn{width:100%;padding:14px;border-radius:var(--r);font-family:'Figtree',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border:1px solid transparent;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.sa-btn:active{transform:scale(.98)}
+.sa-primary{background:var(--y);color:#000;border-color:var(--yd)}
+.sa-success{background:var(--gs);color:var(--green);border-color:rgba(34,197,94,.3)}
+.sa-danger{background:var(--rs);color:var(--red);border-color:rgba(239,68,68,.3)}
+.sa-warn{background:var(--os);color:var(--orange);border-color:rgba(249,115,22,.3)}
+.sa-sec{background:var(--bg3);color:var(--tx2);border-color:var(--bd)}
+
+/* TEXTAREA / INPUT in sheet */
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;font-weight:600}
+.fc{width:100%;background:var(--bg3);border:1px solid var(--bd2);border-radius:var(--rs2);color:var(--tx);padding:11px 13px;font-size:14px;font-family:'Figtree',sans-serif;outline:none;transition:border-color .15s}
+.fc:focus{border-color:var(--y)}
+.fc::placeholder{color:var(--tx3)}
+textarea.fc{resize:none;min-height:80px;line-height:1.5}
+select.fc{-webkit-appearance:none}
+
+/* TIMELINE IN SHEET */
+.tl{display:flex;flex-direction:column;gap:0}
+.tli{display:flex;gap:9px;position:relative}
+.tli:not(:last-child)::before{content:'';position:absolute;left:11px;top:22px;bottom:0;width:1px;background:var(--bd)}
+.tld{width:23px;height:23px;border-radius:50%;background:var(--bg4);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;z-index:1}
+.tlc{flex:1;padding-bottom:12px}
+.tlt{font-size:12px;color:var(--tx);line-height:1.4}
+.tlm{font-size:10px;color:var(--tx3);font-family:'JetBrains Mono',monospace;margin-top:2px}
+
+/* SEARCH BAR */
+.search-bar{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.search-bar input{background:none;border:none;outline:none;color:var(--tx);font-size:14px;flex:1;font-family:'Figtree',sans-serif}
+.search-bar input::placeholder{color:var(--tx3)}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:40px 20px;color:var(--tx3)}
+.empty .ico{font-size:36px;margin-bottom:8px;opacity:.4}
+.empty p{font-size:12px}
+
+/* FILTER PILLS */
+.filter-scroll{display:flex;gap:7px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px}
+.filter-scroll::-webkit-scrollbar{display:none}
+.fpill{background:var(--bg3);border:1px solid var(--bd);border-radius:20px;padding:6px 13px;font-size:11px;font-weight:600;color:var(--tx2);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s}
+.fpill.on{background:var(--y);color:#000;border-color:var(--yd)}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(70px + var(--safe-bot));left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--bd2);border-radius:20px;padding:9px 18px;font-size:13px;font-weight:600;white-space:nowrap;opacity:0;transition:all .25s;z-index:900;max-width:320px;text-align:center;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* PROFILE VIEW */
+.profile-card{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:20px;text-align:center;margin-bottom:12px}
+.profile-av{width:72px;height:72px;border-radius:50%;background:var(--y);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#000;margin:0 auto 12px}
+.profile-av.sup{background:var(--red)}
+.stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-box{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rs2);padding:12px 8px;text-align:center}
+.stat-n{font-size:22px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--y)}
+.stat-l{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-logo">
+    <div class="brand">PIONIER TI</div>
+    <div class="sub">APP TÉCNICOS DE CAMPO</div>
+    <div class="badge">Solo para personal TI autorizado</div>
+  </div>
+
+  <div id="step-user" style="width:100%">
+    <div style="font-size:11px;color:var(--tx2);text-align:center;margin-bottom:10px;letter-spacing:.5px;text-transform:uppercase">¿Quién eres?</div>
+    <div class="user-list" id="userList"></div>
+  </div>
+
+  <div id="step-pin" style="display:none;width:100%">
+    <div class="pin-label" id="pinLabel">Ingresa tu PIN</div>
+    <div class="pin-dots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-grid">
+      <div class="pin-key" onclick="pinKey('1')">1</div>
+      <div class="pin-key" onclick="pinKey('2')">2</div>
+      <div class="pin-key" onclick="pinKey('3')">3</div>
+      <div class="pin-key" onclick="pinKey('4')">4</div>
+      <div class="pin-key" onclick="pinKey('5')">5</div>
+      <div class="pin-key" onclick="pinKey('6')">6</div>
+      <div class="pin-key" onclick="pinKey('7')">7</div>
+      <div class="pin-key" onclick="pinKey('8')">8</div>
+      <div class="pin-key" onclick="pinKey('9')">9</div>
+      <div class="pin-key" onclick="backUser()" style="font-size:12px;color:var(--tx2)">← Volver</div>
+      <div class="pin-key" onclick="pinKey('0')">0</div>
+      <div class="pin-key del" onclick="pinDel()">⌫</div>
+    </div>
+    <div class="pin-err" id="pinErr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appShell">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-av" id="tbAv">?</div>
+    <div class="tb-info">
+      <div class="tb-name" id="tbName">-</div>
+      <div class="tb-role" id="tbRole">-</div>
+    </div>
+    <div class="tb-right">
+      <div class="notif-btn" onclick="showToast('Sin notificaciones nuevas','')">
+        🔔<div class="notif-badge" id="notifBadge">0</div>
+      </div>
+      <div class="logout-btn" onclick="doLogout()">⏻</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="scroll-area" id="scrollArea">
+
+    <!-- HOME -->
+    <div class="view on" id="v-home">
+      <div class="em-strip" id="emStrip" style="display:none" onclick="navTo('tickets')">
+        <span class="ico">🚨</span>
+        <div class="tx"><div class="t1">EMERGENCIA ACTIVA</div><div class="t2">Tickets críticos sin atender</div></div>
+        <div class="cnt" id="emCnt">0</div>
+      </div>
+
+      <div class="kpi-grid" id="kpiGrid"></div>
+
+      <div class="sec-hd"><span class="ttl">🔴 Mis tickets activos</span><span class="act" onclick="navTo('tickets')">Ver todos</span></div>
+      <div id="myActiveList"></div>
+
+      <div class="sec-hd" style="margin-top:14px"><span class="ttl">⚡ Recientes de la sede</span><span class="act" onclick="navTo('tickets')">Ver más</span></div>
+      <div id="recentList"></div>
+    </div>
+
+    <!-- TICKETS -->
+    <div class="view" id="v-tickets">
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" placeholder="Buscar SOL-..." id="searchInp" oninput="filterTickets()" />
+      </div>
+      <div class="filter-scroll" id="filterPills"></div>
+      <div id="ticketList"></div>
+    </div>
+
+    <!-- ACCIONES RÁPIDAS -->
+    <div class="view" id="v-acciones">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--tx2);margin-bottom:12px">Acciones rápidas</div>
+      <div class="action-grid">
+        <div class="action-btn primary" onclick="openQuickClose()">
+          <div class="ab-ico">✅</div>
+          <div class="ab-lbl">Cerrar ticket</div>
+          <div class="ab-sub">Registrar solución</div>
+        </div>
+        <div class="action-btn" onclick="openQuickEscalar()">
+          <div class="ab-ico">⬆️</div>
+          <div class="ab-lbl">Escalar</div>
+          <div class="ab-sub">Subir a nivel 2</div>
+        </div>
+        <div class="action-btn" onclick="openQuickNote()">
+          <div class="ab-ico">📝</div>
+          <div class="ab-lbl">Agregar nota</div>
+          <div class="ab-sub">Comentario técnico</div>
+        </div>
+        <div class="action-btn" onclick="openQuickPending()">
+          <div class="ab-ico">⏸️</div>
+          <div class="ab-lbl">Pend. usuario</div>
+          <div class="ab-sub">Esperando respuesta</div>
+        </div>
+      </div>
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--tx2);margin:16px 0 10px">Mis tickets hoy</div>
+      <div id="todayList"></div>
+    </div>
+
+    <!-- PERFIL -->
+    <div class="view" id="v-perfil">
+      <div class="profile-card" id="profileCard"></div>
+      <div class="stat-row" id="statRow"></div>
+      <div class="action-btn" style="width:100%;flex-direction:row;justify-content:center;margin-bottom:10px" onclick="doLogout()">
+        <span>🚪</span><span style="font-size:14px;font-weight:700">Cerrar sesión</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <div class="nav-item on" id="ni-home" onclick="navTo('home')">
+      <div class="nav-ico">🏠</div>
+      <div class="nav-lbl">Inicio</div>
+      <div class="nav-dot" id="nd-home"></div>
+    </div>
+    <div class="nav-item" id="ni-tickets" onclick="navTo('tickets')">
+      <div class="nav-ico">🎫</div>
+      <div class="nav-lbl">Tickets</div>
+      <div class="nav-dot" id="nd-tickets"></div>
+    </div>
+    <div class="nav-item" id="ni-acciones" onclick="navTo('acciones')">
+      <div class="nav-ico">⚡</div>
+      <div class="nav-lbl">Acciones</div>
+    </div>
+    <div class="nav-item" id="ni-perfil" onclick="navTo('perfil')">
+      <div class="nav-ico">👤</div>
+      <div class="nav-lbl">Perfil</div>
+    </div>
+  </nav>
+</div>
+
+<!-- TICKET DETAIL SHEET -->
+<div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet(event)">
+  <div class="sheet" id="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <div>
+        <div class="sheet-title" id="sheetId">SOL-000000</div>
+        <div style="font-size:11px;color:var(--tx2);margin-top:2px" id="sheetMeta"></div>
+      </div>
+      <div class="sheet-close" onclick="closeSheet()">✕</div>
+    </div>
+    <div class="sheet-body">
+      <div id="sheetContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK ACTION SHEET -->
+<div class="sheet-overlay" id="qaOverlay" onclick="closeQA(event)">
+  <div class="sheet" id="qaSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <div class="sheet-title" id="qaTitle">Acción rápida</div>
+      <div class="sheet-close" onclick="closeQA()">✕</div>
+    </div>
+    <div class="sheet-body" id="qaBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// TEAM — solo los 6 autorizados
+// ═══════════════════════════════════════════════
+const TEAM = [
+  {id:'mauro',    n:'Mauro Elías Ortiz',     r:'Supervisor TI',          av:'ME', role:'supervisor', pin:'1234', avCls:'sup'},
+  {id:'cristian', n:'Cristian Huamán León',  r:'Asist. Ciberseguridad',  av:'CH', role:'tecnico',    pin:'2222'},
+  {id:'alex',     n:'Alex Aguirre C.',        r:'Asist. Soporte Técnico', av:'AA', role:'tecnico',    pin:'3333'},
+  {id:'daniel',   n:'Daniel Guerrero T.',     r:'Analista de Soporte',    av:'DG', role:'tecnico',    pin:'4444'},
+  {id:'franco',   n:'Franco Vásquez N.',      r:'Analista de Soporte',    av:'FV', role:'tecnico',    pin:'5555'},
+];
+
+const SH={Critico:4,Alto:8,Medio:24,Bajo:72};
+let CU=null, curPin='', slaInterval=null;
+let curFilter='todos', curSearch='';
+
+// ═══════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════
+const gT=()=>JSON.parse(localStorage.getItem('pio_v2')||'[]');
+const sTs=d=>localStorage.setItem('pio_v2',JSON.stringify(d));
+const gSOL=()=>'SOL-'+String(Math.floor(Math.random()*900000)+100000);
+
+// ═══════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════
+(function initLogin(){
+  const list = document.getElementById('userList');
+  list.innerHTML = TEAM.map(u=>`
+    <div class="user-btn" onclick="selectUser('${u.id}')">
+      <div class="user-av ${u.avCls||''}">${u.av}</div>
+      <div class="user-info">
+        <div class="nm">${u.n}</div>
+        <div class="rl">${u.r}</div>
+      </div>
+      ${u.role==='supervisor'?'<span class="badge-sup">SUPER</span>':''}
+    </div>`).join('');
+})();
+
+let selectedUser = null;
+function selectUser(id){
+  selectedUser = TEAM.find(u=>u.id===id);
+  document.getElementById('step-user').style.display='none';
+  document.getElementById('step-pin').style.display='block';
+  document.getElementById('pinLabel').textContent='PIN de '+selectedUser.n.split(' ')[0];
+  curPin='';updateDots();
+}
+function backUser(){
+  document.getElementById('step-user').style.display='block';
+  document.getElementById('step-pin').style.display='none';
+  curPin='';updateDots();document.getElementById('pinErr').textContent='';
+}
+function pinKey(k){
+  if(curPin.length>=4)return;
+  curPin+=k;updateDots();
+  if(curPin.length===4)setTimeout(checkPin,120);
+}
+function pinDel(){curPin=curPin.slice(0,-1);updateDots();}
+function updateDots(){
+  for(let i=0;i<4;i++){
+    document.getElementById('pd'+i).classList.toggle('filled',i<curPin.length);
+  }
+}
+function checkPin(){
+  if(curPin===selectedUser.pin){
+    doLoginSuccess();
+  } else {
+    document.getElementById('pinErr').textContent='PIN incorrecto. Inténtalo de nuevo.';
+    curPin='';
+    setTimeout(()=>{updateDots();},200);
+    setTimeout(()=>{document.getElementById('pinErr').textContent='';},2000);
+  }
+}
+function doLoginSuccess(){
+  CU={...selectedUser};
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('appShell').classList.add('on');
+  const av=document.getElementById('tbAv');
+  av.textContent=CU.av;av.className='tb-av'+(CU.avCls?' '+CU.avCls:'');
+  document.getElementById('tbName').textContent=CU.n;
+  document.getElementById('tbRole').textContent=CU.r;
+  ensureSeed();
+  loadHome();buildFilters();
+  slaInterval=setInterval(()=>{updSla();checkEM();},15000);
+}
+function doLogout(){
+  clearInterval(slaInterval);CU=null;
+  document.getElementById('appShell').classList.remove('on');
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('step-user').style.display='block';
+  document.getElementById('step-pin').style.display='none';
+  curPin='';updateDots();selectedUser=null;
+}
+
+// ═══════════════════════════════════════════════
+// SLA
+// ═══════════════════════════════════════════════
+function slaR(t){
+  if(['Resuelto','Cerrado'].includes(t.estado))return null;
+  return(SH[t.prioridad]||24)*3600000-(Date.now()-new Date(t.createdAt).getTime());
+}
+function fSla(ms){
+  if(ms===null)return'—';if(ms<=0)return'VENCIDO';
+  const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);
+  return h+'h'+String(m).padStart(2,'0')+'m';
+}
+function sC(ms){
+  if(ms===null)return'sla-ok';
+  if(ms<=0||ms<1800000)return'sla-x';
+  if(ms<3600000)return'sla-w';
+  return'sla-ok';
+}
+function updSla(){
+  document.querySelectorAll('[data-sla]').forEach(el=>{
+    const t=gT().find(x=>x.id===el.getAttribute('data-sla'));
+    if(!t)return;
+    const r=slaR(t);el.textContent=fSla(r);el.className='tc-sla '+sC(r);
+  });
+}
+function checkEM(){
+  const ts=gT();
+  const cr=ts.filter(t=>t.prioridad==='Critico'&&!['Resuelto','Cerrado'].includes(t.estado));
+  const strip=document.getElementById('emStrip');
+  const nb=document.getElementById('notifBadge');
+  if(cr.length){
+    strip.style.display='flex';document.getElementById('emCnt').textContent=cr.length;
+    nb.textContent=cr.length;nb.classList.add('on');
+    document.getElementById('nd-home').classList.add('on');
+  } else {
+    strip.style.display='none';nb.classList.remove('on');
+    document.getElementById('nd-home').classList.remove('on');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+let curView='home';
+function navTo(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('on'));
+  document.getElementById('v-'+v).classList.add('on');
+  const ni=document.getElementById('ni-'+v);if(ni)ni.classList.add('on');
+  curView=v;
+  document.getElementById('scrollArea').scrollTo(0,0);
+  if(v==='home')loadHome();
+  if(v==='tickets')renderTickets();
+  if(v==='acciones')renderToday();
+  if(v==='perfil')renderPerfil();
+}
+
+// ═══════════════════════════════════════════════
+// BADGES / STATUS
+// ═══════════════════════════════════════════════
+function eBadge(s){
+  const m={'Registrado':'b-reg','Pendiente de Aprobacion':'b-pa','Aprobado':'b-reg','En Atencion':'b-eat','Escalado':'b-esc','Pendiente de Usuario':'b-pa','Resuelto':'b-res','Cerrado':'b-cer','Reabierto':'b-rea'};
+  return`<span class="badge ${m[s]||''}">${s}</span>`;
+}
+function prioCls(p){
+  const m={Critico:'crit',Alto:'alto',Medio:'medio',Bajo:'bajo'};return m[p]||'bajo';
+}
+
+// ═══════════════════════════════════════════════
+// TICKET CARD
+// ═══════════════════════════════════════════════
+function tcHTML(t,compact){
+  const rem=slaR(t),sc=sC(rem);
+  return`
+  <div class="ticket-card ${prioCls(t.prioridad)}" onclick="openDetail('${t.id}')">
+    <div class="tc-top">
+      <span class="tc-id">${t.id}</span>
+      <span class="tc-title">${t.titulo}</span>
+    </div>
+    <div class="tc-mid">
+      <span class="tc-area">${t.area}</span>
+      ${eBadge(t.estado)}
+      ${t.prioridad==='Critico'?'<span class="badge b-eat" style="background:rgba(239,68,68,.2);color:#f87171">🚨 CRÍTICO</span>':''}
+    </div>
+    <div class="tc-bot">
+      <span class="tc-sol">${t.sol}</span>
+      <span class="tc-sla ${sc}" data-sla="${t.id}">${fSla(rem)}</span>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// HOME VIEW
+// ═══════════════════════════════════════════════
+function loadHome(){
+  const ts=gT();
+  const mine=ts.filter(t=>t.tecId===CU.id);
+  const open=ts.filter(t=>!['Resuelto','Cerrado'].includes(t.estado)).length;
+  const mineOpen=mine.filter(t=>!['Resuelto','Cerrado'].includes(t.estado)).length;
+  const mineDone=mine.filter(t=>t.estado==='Resuelto'||t.estado==='Cerrado').length;
+  const venc=ts.filter(t=>!['Resuelto','Cerrado'].includes(t.estado)&&slaR(t)!==null&&slaR(t)<=0).length;
+  document.getElementById('kpiGrid').innerHTML=`
+    <div class="kpi y"><div class="lbl">Mis abiertos</div><div class="val">${mineOpen}</div><div class="sub">asignados a mí</div></div>
+    <div class="kpi rd"><div class="lbl">SLA vencidos</div><div class="val">${venc}</div><div class="sub">toda la sede</div></div>
+    <div class="kpi gn"><div class="lbl">Cerré hoy</div><div class="val">${mine.filter(t=>(t.estado==='Resuelto'||t.estado==='Cerrado')&&new Date(t.updatedAt).toDateString()===new Date().toDateString()).length}</div><div class="sub">tickets resueltos</div></div>
+    <div class="kpi or"><div class="lbl">Total sede</div><div class="val">${open}</div><div class="sub">sin cerrar</div></div>
+  `;
+  // Mis activos
+  const myActive=mine.filter(t=>!['Resuelto','Cerrado'].includes(t.estado)).sort((a,b)=>{
+    const po={Critico:0,Alto:1,Medio:2,Bajo:3};return(po[a.prioridad]||3)-(po[b.prioridad]||3);
+  }).slice(0,5);
+  const mal=document.getElementById('myActiveList');
+  mal.innerHTML=myActive.length?myActive.map(t=>tcHTML(t)).join(''):`<div class="empty"><div class="ico">✅</div><p>Sin tickets activos asignados</p></div>`;
+  // Recientes globales
+  const recent=ts.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,4);
+  document.getElementById('recentList').innerHTML=recent.map(t=>tcHTML(t)).join('');
+  checkEM();
+}
+
+// ═══════════════════════════════════════════════
+// TICKETS VIEW
+// ═══════════════════════════════════════════════
+const FILTERS=[
+  {k:'todos',l:'Todos'},
+  {k:'mios',l:'Mis tickets'},
+  {k:'critico',l:'🚨 Crítico'},
+  {k:'atencion',l:'En atención'},
+  {k:'vencidos',l:'SLA vencido'},
+  {k:'resuelto',l:'Resueltos'},
+];
+function buildFilters(){
+  document.getElementById('filterPills').innerHTML=FILTERS.map(f=>
+    `<div class="fpill${f.k===curFilter?' on':''}" onclick="setFilter('${f.k}')">${f.l}</div>`
+  ).join('');
+}
+function setFilter(k){curFilter=k;buildFilters();renderTickets();}
+function filterTickets(){curSearch=document.getElementById('searchInp').value.toLowerCase();renderTickets();}
+function renderTickets(){
+  let ts=gT();
+  if(curFilter==='mios')ts=ts.filter(t=>t.tecId===CU.id);
+  else if(curFilter==='critico')ts=ts.filter(t=>t.prioridad==='Critico');
+  else if(curFilter==='atencion')ts=ts.filter(t=>t.estado==='En Atencion');
+  else if(curFilter==='vencidos')ts=ts.filter(t=>!['Resuelto','Cerrado'].includes(t.estado)&&slaR(t)!==null&&slaR(t)<=0);
+  else if(curFilter==='resuelto')ts=ts.filter(t=>['Resuelto','Cerrado'].includes(t.estado));
+  if(curSearch)ts=ts.filter(t=>t.id.toLowerCase().includes(curSearch)||t.titulo.toLowerCase().includes(curSearch)||t.area.toLowerCase().includes(curSearch)||t.sol.toLowerCase().includes(curSearch));
+  ts=ts.sort((a,b)=>{
+    const po={Critico:0,Alto:1,Medio:2,Bajo:3};
+    const pd=(po[a.prioridad]||3)-(po[b.prioridad]||3);
+    if(pd!==0)return pd;return new Date(b.createdAt)-new Date(a.createdAt);
+  });
+  const el=document.getElementById('ticketList');
+  el.innerHTML=ts.length?ts.map(t=>tcHTML(t)).join(''):`<div class="empty"><div class="ico">🔍</div><p>Sin tickets con ese filtro</p></div>`;
+}
+
+// ═══════════════════════════════════════════════
+// DETAIL SHEET
+// ═══════════════════════════════════════════════
+let curTk=null;
+function openDetail(id){
+  curTk=id;const ts=gT();const t=ts.find(x=>x.id===id);if(!t)return;
+  document.getElementById('sheetId').textContent=t.id;
+  document.getElementById('sheetMeta').textContent=fD(t.createdAt)+' · '+t.empresa;
+  const rem=slaR(t);
+  // Build actions based on role and state
+  const acts=[];
+  const r=CU.role;
+  if(['Registrado','Aprobado'].includes(t.estado)){
+    acts.push({lbl:'▶ Tomar y empezar',cls:'sa-primary',fn:`quickAction('atencion','${id}')`});
+  }
+  if(t.estado==='En Atencion'&&(t.tecId===CU.id||r==='supervisor')){
+    acts.push({lbl:'✅ Resolver ticket',cls:'sa-success',fn:`quickAction('resolver','${id}')`});
+    acts.push({lbl:'⏸ Pend. usuario',cls:'sa-warn',fn:`quickAction('penduser','${id}')`});
+    acts.push({lbl:'⬆ Escalar',cls:'sa-sec',fn:`quickAction('escalar','${id}')`});
+  }
+  if(t.estado==='Resuelto'&&r==='supervisor'){
+    acts.push({lbl:'🔒 Cerrar formalmente',cls:'sa-sec',fn:`quickAction('cerrar','${id}')`});
+  }
+  if(t.estado==='Reabierto'){
+    acts.push({lbl:'▶ Retomar atención',cls:'sa-primary',fn:`quickAction('atencion','${id}')`});
+  }
+  if(r==='supervisor'){
+    acts.push({lbl:'👤 Reasignar técnico',cls:'sa-sec',fn:`openReasign('${id}')`});
+  }
+  const rows=[
+    ['Área',t.area+' / '+t.subtipo],
+    ['Prioridad',t.prioridad+(t.prioridad==='Critico'?' 🚨':'')],
+    ['Estado',t.estado],
+    ['Solicitante',t.sol],
+    ['Técnico',t.tecNm||'Sin asignar'],
+    ['SLA',`<span class="${sC(rem)}" style="font-family:monospace;font-weight:700">${fSla(rem)}</span>`],
+  ];
+  if(t.planta)rows.push(['Sede',t.planta]);
+  if(t.equipo)rows.push(['Equipo',t.equipo]);
+  if(t.ip)rows.push(['IP',t.ip]);
+  if(t.diagnostico)rows.push(['Diagnóstico',t.diagnostico]);
+  const hist=[...(t.hist||[]),...(t.cmts||[])].sort((a,b)=>new Date(b.at)-new Date(a.at)).slice(0,6);
+  document.getElementById('sheetContent').innerHTML=`
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px;line-height:1.4">${t.titulo}</div>
+    <div style="font-size:12px;color:var(--tx2);margin-bottom:14px;line-height:1.5">${t.descripcion}</div>
+    ${acts.length?`<div style="font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-bottom:8px">Acciones</div>
+    <div class="sheet-actions">${acts.map(a=>`<button class="sa-btn ${a.cls}" onclick="${a.fn}">${a.lbl}</button>`).join('')}</div>`:''}
+    <div class="field">
+      <label>Nota / comentario rápido</label>
+      <textarea class="fc" id="noteTx" placeholder="Qué encontraste, diagnóstico, avance..." rows="3"></textarea>
+    </div>
+    <button class="sa-btn sa-sec" onclick="saveNote('${id}')" style="margin-bottom:16px">💬 Guardar nota</button>
+    <div style="font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-bottom:8px">Datos</div>
+    <div class="drow" style="border-top:1px solid var(--bd)">${rows.map(([k,v])=>`<span class="dk">${k}</span><span class="dv">${v}</span>`).join('</div><div class="drow">')}</div>
+    <div style="font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin:14px 0 8px">Historial</div>
+    <div class="tl">${hist.map(h=>`<div class="tli"><div class="tld">●</div><div class="tlc"><div class="tlt">${h.a||''}</div><div class="tlm">${fD(h.at)} · ${h.by}</div></div></div>`).join('')}</div>
+  `;
+  document.getElementById('sheetOverlay').classList.add('on');
+}
+function closeSheet(e){if(!e||e.target===document.getElementById('sheetOverlay'))document.getElementById('sheetOverlay').classList.remove('on');}
+
+function quickAction(type,id){
+  const ts=gT();const i=ts.findIndex(x=>x.id===id);if(i===-1)return;
+  const msgs={
+    atencion:'Ticket tomado por '+CU.n+'. Iniciando atención.',
+    resolver:'Ticket resuelto por '+CU.n+'.',
+    penduser:'Pendiente de respuesta del usuario.',
+    escalar:'Ticket escalado por '+CU.n+'.',
+    cerrar:'Cerrado formalmente por '+CU.n+'.',
+  };
+  const estados={atencion:'En Atencion',resolver:'Resuelto',penduser:'Pendiente de Usuario',escalar:'Escalado',cerrar:'Cerrado'};
+  ts[i].estado=estados[type];
+  if(type==='atencion'){ts[i].tecId=CU.id;ts[i].tecNm=CU.n;}
+  if(type==='resolver')ts[i].resolvedAt=new Date().toISOString();
+  ts[i].updatedAt=new Date().toISOString();
+  ts[i].hist.push({a:msgs[type],by:CU.n,at:new Date().toISOString(),tp:type});
+  sTs(ts);
+  closeSheet();showToast(msgs[type].slice(0,40),'green');
+  if(curView==='home')loadHome();else renderTickets();
+  checkEM();
+}
+function saveNote(id){
+  const txt=document.getElementById('noteTx')?.value?.trim();
+  if(!txt)return;
+  const ts=gT();const i=ts.findIndex(x=>x.id===id);if(i===-1)return;
+  ts[i].cmts=ts[i].cmts||[];
+  ts[i].cmts.push({a:'Nota: '+txt,by:CU.n,at:new Date().toISOString(),tp:'cmt'});
+  ts[i].updatedAt=new Date().toISOString();sTs(ts);
+  document.getElementById('noteTx').value='';
+  showToast('Nota guardada','green');
+  openDetail(id);
+}
+function openReasign(id){
+  document.getElementById('qaTitle').textContent='Reasignar técnico';
+  const opts=TEAM.filter(t=>t.role==='tecnico').map(t=>`<option value="${t.id}">${t.n}</option>`).join('');
+  document.getElementById('qaBody').innerHTML=`
+    <div class="field"><label>Técnico responsable</label>
+    <select class="fc" id="reasignSel"><option value="">Selecciona...</option>${opts}</select></div>
+    <button class="sa-btn sa-primary" onclick="confirmReasign('${id}')">Reasignar</button>`;
+  document.getElementById('qaOverlay').classList.add('on');
+}
+function confirmReasign(id){
+  const sel=document.getElementById('reasignSel');const tid=sel.value;if(!tid)return;
+  const tec=TEAM.find(t=>t.id===tid);if(!tec)return;
+  const ts=gT();const i=ts.findIndex(x=>x.id===id);if(i===-1)return;
+  ts[i].tecId=tid;ts[i].tecNm=tec.n;
+  if(['Registrado','Aprobado'].includes(ts[i].estado))ts[i].estado='En Atencion';
+  ts[i].updatedAt=new Date().toISOString();
+  ts[i].hist.push({a:'Reasignado a '+tec.n+' por '+CU.n,by:CU.n,at:new Date().toISOString(),tp:'assign'});
+  sTs(ts);closeQA();closeSheet();
+  showToast('Reasignado a '+tec.n,'blue');
+  if(curView==='home')loadHome();else renderTickets();
+}
+
+// ═══════════════════════════════════════════════
+// QUICK ACTIONS
+// ═══════════════════════════════════════════════
+function closeQA(e){if(!e||e.target===document.getElementById('qaOverlay'))document.getElementById('qaOverlay').classList.remove('on');}
+
+function openQuickClose(){
+  const mine=gT().filter(t=>t.tecId===CU.id&&t.estado==='En Atencion');
+  document.getElementById('qaTitle').textContent='✅ Cerrar ticket';
+  if(!mine.length){document.getElementById('qaBody').innerHTML='<div class="empty"><div class="ico">✅</div><p>No tienes tickets "En atención" para cerrar</p></div>';document.getElementById('qaOverlay').classList.add('on');return;}
+  document.getElementById('qaBody').innerHTML=`
+    <div class="field"><label>¿Qué ticket cerraste?</label>
+    <select class="fc" id="qcTk">${mine.map(t=>`<option value="${t.id}">${t.id} — ${t.titulo.slice(0,35)}</option>`).join('')}</select></div>
+    <div class="field"><label>Describe la solución aplicada</label>
+    <textarea class="fc" id="qcSol" placeholder="Qué hiciste para resolverlo..." rows="3"></textarea></div>
+    <button class="sa-btn sa-success" onclick="confirmClose()">✅ Confirmar cierre</button>`;
+  document.getElementById('qaOverlay').classList.add('on');
+}
+function confirmClose(){
+  const id=document.getElementById('qcTk').value;
+  const sol=document.getElementById('qcSol').value.trim();
+  if(!sol){showToast('Describe la solución antes de cerrar','red');return;}
+  const ts=gT();const i=ts.findIndex(x=>x.id===id);if(i===-1)return;
+  ts[i].estado='Resuelto';ts[i].diagnostico=sol;ts[i].resolvedAt=new Date().toISOString();
+  ts[i].updatedAt=new Date().toISOString();
+  ts[i].hist.push({a:'Resuelto por '+CU.n+'. Solución: '+sol,by:CU.n,at:new Date().toISOString(),tp:'s'});
+  sTs(ts);closeQA();showToast('Ticket '+id+' cerrado','green');
+  if(curView==='home')loadHome();else renderTickets();checkEM();
+}
+
+function openQuickEscalar(){
+  const mine=gT().filter(t=>t.tecId===CU.id&&!['Resuelto','Cerrado'].includes(t.estado));
+  document.getElementById('qaTitle').textContent='⬆ Escalar ticket';
+  if(!mine.length){document.getElementById('qaBody').innerHTML='<div class="empty"><div class="ico">⬆️</div><p>Sin tickets activos para escalar</p></div>';document.getElementById('qaOverlay').classList.add('on');return;}
+  document.getElementById('qaBody').innerHTML=`
+    <div class="field"><label>¿Qué ticket escalas?</label>
+    <select class="fc" id="qeTk">${mine.map(t=>`<option value="${t.id}">${t.id} — ${t.titulo.slice(0,35)}</option>`).join('')}</select></div>
+    <div class="field"><label>Motivo del escalamiento</label>
+    <textarea class="fc" id="qeReason" placeholder="Por qué lo escalas, qué intentaste..." rows="3"></textarea></div>
+    <button class="sa-btn sa-warn" onclick="confirmEscalar()">⬆ Confirmar escalamiento</button>`;
+  document.getElementById('qaOverlay').classList.add('on');
+}
+function confirmEscalar(){
+  const id=document.getElementById('qeTk').value;
+  const reason=document.getElementById('qeReason').value.trim();
+  if(!reason){showToast('Describe el motivo del escalamiento','red');return;}
+  const ts=gT();const i=ts.findIndex(x=>x.id===id);if(i===-1)return;
+  ts[i].estado='Escalado';ts[i].updatedAt=new Date().toISOString();
+  ts[i].hist.push({a:'Escalado por '+CU.n+'. Motivo: '+reason,by:CU.n,at:new Date().toISOString(),tp:'s'});
+  sTs(ts);closeQA();showToast('Ticket escalado','orange');
+  if(curView==='home')loadHome();else renderTickets();
+}
+
+function openQuickNote(){
+  const mine=gT().filter(t=>t.tecId===CU.id&&!['Resuelto','Cerrado'].includes(t.estado));
+  document.getElementById('qaTitle').textContent='📝 Agregar nota';
+  if(!mine.length){document.getElementById('qaBody').innerHTML='<div class="empty"><div class="ico">📝</div><p>Sin tickets activos asignados</p></div>';document.getElementById('qaOverlay').classList.add('on');return;}
+  document.getElementById('qaBody').innerHTML=`
+    <div class="field"><label>Ticket</label>
+    <select class="fc" id="qnTk">${mine.map(t=>`<option value="${t.id}">${t.id} — ${t.titulo.slice(0,35)}</option>`).join('')}</select></div>
+    <div class="field"><label>Nota técnica</label>
+    <textarea class="fc" id="qnNote" placeholder="Diagnóstico, avance, observación..." rows="3"></textarea></div>
+    <button class="sa-btn sa-primary" onclick="confirmNote()">💬 Guardar nota</button>`;
+  document.getElementById('qaOverlay').classList.add('on');
+}
+function confirmNote(){
+  const id=document.getElementById('qnTk').value;
+  const note=document.getElementById('qnNote').value.trim();
+  if(!note){showToast('Escribe una nota','red');return;}
+  const ts=gT();const i=ts.findIndex(x=>x.id===id);if(i===-1)return;
+  ts[i].cmts=ts[i].cmts||[];
+  ts[i].cmts.push({a:'Nota técnica: '+note,by:CU.n,at:new Date().toISOString(),tp:'cmt'});
+  ts[i].updatedAt=new Date().toISOString();sTs(ts);closeQA();showToast('Nota guardada','green');
+}
+
+function openQuickPending(){
+  const mine=gT().filter(t=>t.tecId===CU.id&&t.estado==='En Atencion');
+  document.getElementById('qaTitle').textContent='⏸ Pendiente de usuario';
+  if(!mine.length){document.getElementById('qaBody').innerHTML='<div class="empty"><div class="ico">⏸️</div><p>Sin tickets "En atención"</p></div>';document.getElementById('qaOverlay').classList.add('on');return;}
+  document.getElementById('qaBody').innerHTML=`
+    <div class="field"><label>Ticket</label>
+    <select class="fc" id="qpTk">${mine.map(t=>`<option value="${t.id}">${t.id} — ${t.titulo.slice(0,35)}</option>`).join('')}</select></div>
+    <div class="field"><label>¿Qué esperas del usuario?</label>
+    <textarea class="fc" id="qpReason" placeholder="Qué necesitas que el usuario haga o confirme..." rows="3"></textarea></div>
+    <button class="sa-btn sa-warn" onclick="confirmPending()">⏸ Marcar pendiente</button>`;
+  document.getElementById('qaOverlay').classList.add('on');
+}
+function confirmPending(){
+  const id=document.getElementById('qpTk').value;
+  const reason=document.getElementById('qpReason').value.trim();
+  if(!reason){showToast('Explica qué esperas del usuario','red');return;}
+  const ts=gT();const i=ts.findIndex(x=>x.id===id);if(i===-1)return;
+  ts[i].estado='Pendiente de Usuario';ts[i].updatedAt=new Date().toISOString();
+  ts[i].hist.push({a:'Pend. usuario por '+CU.n+': '+reason,by:CU.n,at:new Date().toISOString(),tp:'s'});
+  sTs(ts);closeQA();showToast('Ticket en espera de usuario','orange');
+  if(curView==='home')loadHome();else renderTickets();
+}
+
+// ═══════════════════════════════════════════════
+// TODAY / ACCIONES VIEW
+// ═══════════════════════════════════════════════
+function renderToday(){
+  const today=new Date().toDateString();
+  const ts=gT().filter(t=>t.tecId===CU.id&&new Date(t.updatedAt).toDateString()===today);
+  document.getElementById('todayList').innerHTML=ts.length?ts.map(t=>tcHTML(t)).join(''):`<div class="empty"><div class="ico">📅</div><p>Sin actividad registrada hoy</p></div>`;
+}
+
+// ═══════════════════════════════════════════════
+// PERFIL VIEW
+// ═══════════════════════════════════════════════
+function renderPerfil(){
+  const ts=gT();
+  const mine=ts.filter(t=>t.tecId===CU.id);
+  const open=mine.filter(t=>!['Resuelto','Cerrado'].includes(t.estado)).length;
+  const done=mine.filter(t=>['Resuelto','Cerrado'].includes(t.estado)).length;
+  const venc=mine.filter(t=>!['Resuelto','Cerrado'].includes(t.estado)&&slaR(t)!==null&&slaR(t)<=0).length;
+  document.getElementById('profileCard').innerHTML=`
+    <div class="profile-av ${CU.avCls||''}">${CU.av}</div>
+    <div style="font-size:18px;font-weight:800;margin-bottom:4px">${CU.n}</div>
+    <div style="font-size:12px;color:var(--tx2)">${CU.r}</div>
+    <div style="margin-top:10px;display:inline-block;background:var(--bg4);border:1px solid var(--bd);border-radius:20px;padding:4px 14px;font-size:11px;color:var(--tx2)">
+      ${CU.role==='supervisor'?'👑 Supervisor TI':'🔧 Técnico de campo'}
+    </div>`;
+  document.getElementById('statRow').innerHTML=`
+    <div class="stat-box"><div class="stat-n" style="color:var(--y)">${open}</div><div class="stat-l">Abiertos</div></div>
+    <div class="stat-box"><div class="stat-n" style="color:var(--green)">${done}</div><div class="stat-l">Cerrados</div></div>
+    <div class="stat-box"><div class="stat-n" style="color:var(--red)">${venc}</div><div class="stat-l">Vencidos</div></div>`;
+}
+
+// ═══════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════
+function fD(iso){
+  if(!iso)return'-';const d=new Date(iso);
+  return d.toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'});
+}
+function showToast(msg,type){
+  const el=document.getElementById('toast');
+  const c={green:var(--green),red:var(--red),blue:var(--blue),orange:var(--orange),'':'var(--tx)'};
+  el.style.color=type==='green'?'var(--green)':type==='red'?'var(--red)':type==='blue'?'var(--blue)':type==='orange'?'var(--orange)':'var(--tx)';
+  el.style.borderColor=type==='green'?'rgba(34,197,94,.4)':type==='red'?'rgba(239,68,68,.4)':type==='blue'?'rgba(59,130,246,.4)':'var(--bd2)';
+  el.textContent=msg;el.classList.add('on');
+  setTimeout(()=>el.classList.remove('on'),2500);
+}
+
+// ═══════════════════════════════════════════════
+// SEED DATA
+// ═══════════════════════════════════════════════
+function ensureSeed(){
+  if(gT().length>0)return;
+  const now=Date.now();
+  const s=[
+    {a:'Soporte TI',st:'SOPORTE TI',p:'Critico',ti:'SERVIDOR CAIDO — HUACHIPA',de:'Servidor de produccion sin respuesta. Toda la planta paralizada.',h:.3,es:'En Atencion',tid:'mauro',tnm:'Mauro Elías Ortiz'},
+    {a:'Soporte TI',st:'SOPORTE TI',p:'Alto',ti:'PC no enciende — Contabilidad',de:'PC de contabilidad no arranca desde esta mañana. Pitido al encender.',h:1,es:'En Atencion',tid:'daniel',tnm:'Daniel Guerrero T.'},
+    {a:'Desarrollo Web',st:'INCONVENIENTES TECNICOS',p:'Medio',ti:'Error 500 en portal de reportes',de:'Al filtrar por fecha mayor a 30 días aparece error 500.',h:3,es:'Registrado'},
+    {a:'Sistema Activity',st:'INCIDENCIAS',p:'Alto',ti:'Módulo nómina no genera PDF',de:'No genera boletas de pago. Error al exportar.',h:2,es:'En Atencion',tid:'franco',tnm:'Franco Vásquez N.'},
+    {a:'Power BI',st:'ACCESOS',p:'Bajo',ti:'Acceso dashboard ejecutivo',de:'Gerente solicita acceso de lectura.',h:5,es:'Resuelto',tid:'alex',tnm:'Alex Aguirre C.'},
+    {a:'Soporte TI',st:'SOPORTE TI',p:'Medio',ti:'Impresora sin conexion — Piso 3',de:'Impresora HP sin conexion en red desde ayer.',h:4,es:'En Atencion',tid:'cristian',tnm:'Cristian Huamán León'},
+    {a:'Soporte TI',st:'GESTION TI',p:'Alto',ti:'Red caida en sala de servidores',de:'Switch principal reiniciado. Red intermitente.',h:.8,es:'Escalado',tid:'mauro',tnm:'Mauro Elías Ortiz'},
+    {a:'Sistema Activity',st:'ACCESOS',p:'Medio',ti:'Usuario bloqueado — Ana García',de:'Cuenta bloqueada tras 3 intentos fallidos.',h:6,es:'Cerrado',tid:'daniel',tnm:'Daniel Guerrero T.'},
+  ];
+  const ts=s.map(x=>{
+    const ca=new Date(now-x.h*3600000).toISOString();
+    const tid=TEAM.find(t=>t.id===x.tid);
+    return{id:gSOL(),area:x.a,subtipo:x.st,prioridad:x.p,empresa:'MODIPSA',titulo:x.ti,descripcion:x.de,
+      planta:'Huachipa',equipo:'',ip:'',url:'',ambiente:'',reporte:'',modulo:'',usuarioAf:'',
+      req:false,estado:x.es,sol:'Usuario General',solId:'user1',
+      tecId:x.tid||null,tecNm:x.tnm||null,
+      createdAt:ca,updatedAt:ca,
+      resolvedAt:(['Resuelto','Cerrado'].includes(x.es))?new Date(now-1800000).toISOString():null,
+      calificacion:x.es==='Cerrado'?4:null,diagnostico:'',files:[],
+      hist:[{a:'Solicitud registrada.',by:'Sistema',at:ca,tp:'create'}],cmts:[]};
+  });
+  sTs(ts);
+}
+</script>
+</body>
+</html>
